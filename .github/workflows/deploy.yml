@@ -1,0 +1,55 @@
+name: Terraform infra
+
+on:
+  workflow_dispatch:
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout code from the repository
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Set up Terraform
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      # Install TFLint (Terraform Linter)
+      - name: Install TFLint
+        run: |
+          curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | sudo bash
+
+      # AWS CLI version and credentials check
+      - name: AWS CLI version and credentials check
+        run: |
+          aws --version
+          aws sts get-caller-identity
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      # Cache Terraform providers
+      - name: Cache Terraform providers
+        uses: actions/cache@v2
+        with:
+          path: ~/.terraform.d/plugin-cache
+          key: ${{ runner.os }}-terraform-${{ hashFiles('**/*.tf') }}
+          restore-keys: |
+            ${{ runner.os }}-terraform-
+
+      # Initialize Terraform configuration
+      - name: Terraform Init
+        run: terraform init
+
+      # Run Terraform Plan
+      - name: Terraform Plan
+        run: terraform plan -var-file="/env/dev/terraform.tfvars"
+
+      # Apply the Terraform configuration
+      - name: Terraform Apply
+        run: terraform apply -var-file="/env/dev/terraform.tfvars" -auto-approve
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
