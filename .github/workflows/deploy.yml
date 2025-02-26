@@ -47,7 +47,7 @@ jobs:
         working-directory: terraform
 
       - name: Terraform plan
-        run: terraform plan -var="account_id=${{ secrets.ACCOUNT_ID }} # Pass the account_id directly here
+        run: terraform plan -var="account_id=${{ secrets.ACCOUNT_ID }}" # Pass the account_id directly here
         working-directory: terraform
 
       - name: Terraform apply
