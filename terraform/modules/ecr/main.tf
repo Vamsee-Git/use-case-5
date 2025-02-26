@@ -1,4 +1,4 @@
-resource "aws_ecr_repository" "hellow" {
+resource "aws_ecr_repository" "hello" {
   name = "hello"
 }
 
