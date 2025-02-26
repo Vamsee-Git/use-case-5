@@ -45,11 +45,11 @@ jobs:
 
       # Run Terraform Plan
       - name: Terraform Plan
-        run: terraform plan -var-file="/env/dev/terraform.tfvars"
+        run: terraform plan -var-file="terraform/env/dev/dev.tfvars"
 
       # Apply the Terraform configuration
       - name: Terraform Apply
-        run: terraform apply -var-file="/env/dev/terraform.tfvars" -auto-approve
+        run: terraform apply -var-file="terraform/env/dev/dev.tfvars" -auto-approve
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
