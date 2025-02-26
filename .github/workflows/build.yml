@@ -25,5 +25,5 @@ jobs:
 
       - name: Build and push HelloWorld Lambda Docker image
         run: |
-          docker build -t ${{ secrets.ECR_REGISTRY }}/hello:latest ./app
-          docker push ${{ secrets.ECR_REGISTRY }}/hello:latest
+          docker build -t ${{ secrets.ECR_REGISTRY }}/helloworld:latest ./app
+          docker push ${{ secrets.ECR_REGISTRY }}/helloworld:latest
