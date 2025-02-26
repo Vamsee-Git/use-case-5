@@ -11,7 +11,7 @@ module "lambda" {
   image_uri             = "664418994073.dkr.ecr.us-east-1.amazonaws.com/hello:latest"
   environment           = "dev"
   api_stage             = "prod"
-  account_id            = "510278866235"
+  account_id            = "664418994073"
   region                = var.region  # Pass region to the lambda module
 }
 
