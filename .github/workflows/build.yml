@@ -1,29 +1,44 @@
-name: Build and Push Docker Images
-
+name: Deploy to ECR
+ 
 on:
   workflow_dispatch:
-
+env:
+  AWS_REGION: "us-west-2" # Replace with your AWS region
+ 
 jobs:
-  docker:
+  build-and-push:
     runs-on: ubuntu-latest
+ 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up Docker
-        uses: docker/setup-buildx-action@v2
-
-      - name: Configure AWS credentials for Terraform
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: actions/checkout@v3
+        with:
+          # Required for private repositories
+          token: ${{ secrets.GITHUB_TOKEN }}
+ 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      - name: Log in to Amazon ECR
-        uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Build and push HelloWorld Lambda Docker image
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Create ECR
         run: |
-          docker build -t ${{ secrets.ECR_REGISTRY }}/helloworld:latest ./app
-          docker push ${{ secrets.ECR_REGISTRY }}/helloworld:latest
+          aws ecr create-repository --repository-name helloworld
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+ 
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          region: us-west-1
+ 
+      - name: Build and push Docker image for app
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: helloworld
+          IMAGE_TAG: latest
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./app
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
