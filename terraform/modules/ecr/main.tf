@@ -1,5 +1,5 @@
-resource "aws_ecr_repository" "hello" {
-  name = "hello"
+resource "aws_ecr_repository" "helloworld" {
+  name = "helloworld"
 }
 
 
