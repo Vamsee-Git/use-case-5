@@ -8,7 +8,7 @@ module "lambda" {
   source               = "./modules/lambda"
   lambda_function_name  = "myLambda"
   iam_role_arn          = module.iam.lambda_role_arn
-  image_uri             = "664418994073.dkr.ecr.us-west-1.amazonaws.com/helloworld:latest"
+  image_uri             = "664418994073.dkr.ecr.us-east-1.amazonaws.com/helloworld:latest"
   environment           = "dev"
   api_stage             = "prod"
   account_id            = "664418994073"
